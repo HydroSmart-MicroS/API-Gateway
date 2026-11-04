@@ -1,0 +1,58 @@
+@identity path /api/auth/* /api/v1/iam/*
+handle @identity {
+    reverse_proxy {$IDENTITY_UPSTREAM:identity:8080}
+}
+@properties path /api/v1/properties /api/v1/properties/* /api/v1/units /api/v1/units/* /api/v1/devices /api/v1/devices/* /api/v1/tenancies /api/v1/tenancies/*
+handle @properties {
+    forward_auth {$BILLING_UPSTREAM:billing:8080} {
+        uri /api/v1/billing/access
+    }
+    reverse_proxy {$PROPERTIES_UPSTREAM:properties:8080}
+}
+@telemetry path /api/v1/consumption /api/v1/consumption/* /api/v1/simulation/*
+handle @telemetry {
+    forward_auth {$BILLING_UPSTREAM:billing:8080} {
+        uri /api/v1/billing/access
+    }
+    reverse_proxy {$TELEMETRY_UPSTREAM:telemetry:8080}
+}
+@analytics path /api/v1/analytics /api/v1/analytics/* /api/v1/tariffs /api/v1/tariffs/* /api/v1/goals /api/v1/goals/* /api/v1/alerts /api/v1/alerts/*
+handle @analytics {
+    forward_auth {$BILLING_UPSTREAM:billing:8080} {
+        uri /api/v1/billing/access
+    }
+    reverse_proxy {$ANALYTICS_UPSTREAM:analytics:8080}
+}
+@reports path /api/v1/reports /api/v1/reports/*
+handle @reports {
+    forward_auth {$BILLING_UPSTREAM:billing:8080} {
+        uri /api/v1/billing/access
+    }
+    reverse_proxy {$REPORTS_UPSTREAM:reports:8080}
+}
+@notifications path /api/v1/notifications /api/v1/notifications/* /api/v1/notification-preferences
+handle @notifications {
+    forward_auth {$BILLING_UPSTREAM:billing:8080} {
+        uri /api/v1/billing/access
+    }
+    reverse_proxy {$NOTIFICATIONS_UPSTREAM:notifications:8080}
+}
+@billing path /api/v1/billing /api/v1/billing/*
+handle @billing {
+    reverse_proxy {$BILLING_UPSTREAM:billing:8080}
+}
+handle /health {
+    respond "Gateway is running; use service readiness checks for dependencies." 200
+}
+@frontend path /app /app/*
+handle @frontend {
+    reverse_proxy {$FRONTEND_UPSTREAM:frontend:3000}
+}
+@private path /api/* /internal/* /v1/*
+handle @private {
+    respond "Not found" 404
+}
+handle {
+    root * /srv/landing
+    file_server
+}

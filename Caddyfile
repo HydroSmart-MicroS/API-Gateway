@@ -1,0 +1,13 @@
+{
+    auto_https off
+    admin off
+}
+:8080 {
+    request_header X-Request-ID {http.request.uuid}
+    header >X-Request-ID {http.request.uuid}
+    log {
+        output stdout
+        format json
+    }
+    import /etc/caddy/routes.caddy
+}

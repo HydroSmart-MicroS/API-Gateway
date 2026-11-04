@@ -1,0 +1,9 @@
+{
+    email {$TLS_EMAIL}
+    admin off
+}
+{$API_DOMAIN} {
+    import /etc/caddy/routes.caddy
+}
+# Publicar 80/443, persistir /data y usar DNS real.
+# Alinear BETTER_AUTH_URL y JWT_ISSUER con https://API_DOMAIN.
