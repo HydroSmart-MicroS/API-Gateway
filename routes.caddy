@@ -1,3 +1,7 @@
+@hidden path_regexp hidden (^|/)\.
+handle @hidden {
+    respond "Not found" 404
+}
 @identity path /api/auth/* /api/v1/iam/*
 handle @identity {
     reverse_proxy {$IDENTITY_UPSTREAM:identity:8080}
@@ -54,5 +58,7 @@ handle @private {
 }
 handle {
     root * /srv/landing
-    file_server
+    file_server {
+        hide .git .env* *.pem *.key
+    }
 }
