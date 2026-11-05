@@ -1,13 +1,31 @@
 {
     auto_https off
     admin off
+    log default {
+        format filter {
+            wrap json
+            fields {
+                resp_headers>Set-Auth-Jwt delete
+                request>uri regexp "^(/api/auth/reset-password/|/app/reset-password).*" "/password-recovery/[redacted]"
+            }
+        }
+    }
 }
 :8080 {
+    @account_links path /api/auth/reset-password/* /app/reset-password
+    log_skip @account_links
+    header @account_links Cache-Control "no-store"
+    header Referrer-Policy "no-referrer"
     request_header X-Request-ID {http.request.uuid}
     header >X-Request-ID {http.request.uuid}
     log {
         output stdout
-        format json
+        format filter {
+            wrap json
+            fields {
+                resp_headers>Set-Auth-Jwt delete
+            }
+        }
     }
     import /etc/caddy/routes.caddy
 }
