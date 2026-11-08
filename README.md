@@ -13,3 +13,7 @@ Compose monta solo los tres archivos públicos de la landing, sin su directorio 
 Prueba: `tests/integration/secrets-http.cjs` desde la carpeta de infraestructura.
 
 [README funcional](../README.md) · [Ver comunicación y colas](../docs/rabbitmq-guide.md).
+
+## Estado desde MAIN
+
+`GET /health` comprueba que Caddy responde. El panel en [MAIN](http://localhost:8081/status) se sirve desde Config Service cuando `ENABLE_STATUS_DASHBOARD=true` está habilitado en Compose. La ruta admite el HTML, sus archivos estáticos y el JSON de estado. El alcance de este acceso es diagnóstico local.
