@@ -45,6 +45,13 @@ handle @notifications {
 handle @billing {
     reverse_proxy {$BILLING_UPSTREAM:billing:8080}
 }
+@status_dashboard {
+    path /status /status/ /status/services /status/dashboard.css /status/dashboard.js
+    expression `"{$ENABLE_STATUS_DASHBOARD:false}" == "true"`
+}
+handle @status_dashboard {
+    reverse_proxy {$CONFIG_STATUS_UPSTREAM:config-service:8080}
+}
 handle /health {
     respond "Gateway is running; use service readiness checks for dependencies." 200
 }
