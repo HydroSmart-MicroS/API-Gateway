@@ -4,7 +4,9 @@ handle @hidden {
 }
 @identity path /api/auth/* /api/v1/iam/*
 handle @identity {
-    reverse_proxy {$IDENTITY_UPSTREAM:identity:8080}
+    reverse_proxy {$IDENTITY_UPSTREAM:identity:8080} {
+        header_up X-Hydrosmart-Client-IP {remote_host}
+    }
 }
 @properties path /api/v1/properties /api/v1/properties/* /api/v1/units /api/v1/units/* /api/v1/devices /api/v1/devices/* /api/v1/tenancies /api/v1/tenancies/*
 handle @properties {
