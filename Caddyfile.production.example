@@ -4,16 +4,18 @@
 }
 {$API_DOMAIN} {
     redir /status /status/ 308
-    @config_panel path /status/ /status/login /status/activity /status/logout /status/services /status/dashboard.css /status/dashboard.js
+    @config_panel path /status/ /status/services /status/dashboard.css /status/dashboard.js
     handle @config_panel {
+        header Cache-Control no-store
+        basic_auth bcrypt "HydroSmart Estado" {
+            monitor {$STATUS_PASSWORD_HASH}
+        }
         reverse_proxy config-service:8080 {
             header_up -Authorization
-            header_up X-Hydrosmart-Status-Session 1
-            header_up X-Hydrosmart-Status-Client {remote_host}
         }
     }
     import /etc/caddy/routes.caddy
 }
 # Publicar 80/443, persistir /data y usar DNS real.
 # Alinear BETTER_AUTH_URL y JWT_ISSUER con https://API_DOMAIN.
-# Deja ENABLE_STATUS_DASHBOARD=false y habilita las sesiones en Config Service.
+# Deja ENABLE_STATUS_DASHBOARD=false y configura STATUS_PASSWORD_HASH con bcrypt.
